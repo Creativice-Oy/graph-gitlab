@@ -11,7 +11,10 @@ import {
   GitLabMergeRequestApproval,
   GitLabProject,
   GitLabUser,
+  GitLabUserRef,
+  GitLabGroupRef,
 } from '../provider/types';
+import { getAccessLevel } from '../util/getAccessLevel';
 import { getCommitWebLinkFromMergeRequest } from '../util/mergeRequest';
 
 export function createProjectEntity(project: GitLabProject): Entity {
@@ -204,4 +207,67 @@ export function createMergeRequestEntityIdentifier(id: number): string {
 const COMMIT_ID_PREFIX = 'gitlab-commit';
 export function createCommitIdentifier(id: number): string {
   return `${COMMIT_ID_PREFIX}:${id}`;
+}
+
+export const createUserAccessRoleEntity = (originEntity: string) => (
+  user: GitLabUserRef,
+): Entity => {
+  const key = createUserAccesRoleIdentifier(originEntity, user.id);
+
+  return createIntegrationEntity({
+    entityData: {
+      source: user,
+      assign: {
+        _key: key,
+        _type: Entities.USER_ACCESS_ROLE._type,
+        _class: Entities.USER_ACCESS_ROLE._class,
+
+        id: user.id.toString(),
+        username: user.username,
+        name: `${user.name} access role`,
+        state: user.state,
+        numericUserAccessLevel: user.access_level,
+        userAccessLevel: getAccessLevel(user.access_level),
+        url: user.web_url,
+        createdOn: parseTimePropertyValue(user.created_at),
+        expiresOn: parseTimePropertyValue(user.expires_at),
+        membershipState: user.membership_state,
+      },
+    },
+  });
+};
+
+export function createUserAccesRoleIdentifier(
+  originEntity: string,
+  id: number,
+): string {
+  return `user-role:${originEntity}:${id}`;
+}
+
+export const createGroupAccessRoleEntity = (projectId: number) => (
+  group: GitLabGroupRef,
+): Entity => {
+  const key = createGroupAccessRoleIdentifier(projectId, group.group_id);
+
+  return createIntegrationEntity({
+    entityData: {
+      source: group,
+      assign: {
+        _key: key,
+        _type: Entities.GROUP_ACCESS_ROLE._type,
+        _class: Entities.GROUP_ACCESS_ROLE._class,
+
+        id: group.group_id.toString(),
+        name: group.group_name,
+        path: group.group_full_path,
+        numericGroupAccessLevel: group.group_access_level,
+        groupAccessLevel: getAccessLevel(group.group_access_level),
+        expiresOn: parseTimePropertyValue(group.expires_at),
+      },
+    },
+  });
+};
+
+export function createGroupAccessRoleIdentifier(projectId: number, id: number) {
+  return `group-role:${projectId}:${id}`;
 }

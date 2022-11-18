@@ -13,6 +13,8 @@ import projectUserStep from './build-project-user-relationships';
 import userOpenedMergeRequestStep from './build-user-opened-merge-request-relationships';
 import accountStep from './fetch-accounts';
 import groupStep from './fetch-groups';
+import { userAccessRoleSteps } from './user-roles';
+import { groupAccessRoleSteps } from './group-roles';
 import { mergeRequestSteps } from './merge-requests';
 import { projectSteps } from './projects';
 import { userSteps } from './users';
@@ -25,6 +27,8 @@ const integrationSteps: Step<
   groupStep,
   ...projectSteps,
   ...userSteps,
+  ...userAccessRoleSteps,
+  ...groupAccessRoleSteps,
   projectUserStep,
   accountGroupStep,
   accountProjectStep,

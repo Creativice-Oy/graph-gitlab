@@ -7,6 +7,8 @@ export const Steps = {
   PROJECTS: 'fetch-projects',
   MERGE_REQUESTS: 'fetch-merge-requests',
   COMMITS: 'fetch-mr-commits',
+  USER_ACCESS_ROLES: 'fetch-user-access-roles',
+  GROUP_ACCESS_ROLES: 'fetch-group-access-roles',
   BUILD_ACCOUNT_HAS_PROJECT: 'build-account-project-relationships',
   BUILD_ACCOUNT_HAS_GROUP: 'build-account-group-relationships',
   BUILD_PROJECT_HAS_USER: 'build-project-user-relationships',
@@ -16,6 +18,10 @@ export const Steps = {
   BUILD_PROJECT_HAS_PR: 'build-project-merge-request-relationships',
   BUILD_USER_OPENED_PR: 'build-user-opened-merge-request-relationships',
   BUILD_USER_APPROVED_PR: 'build-user-approved-merge-request-relationships',
+  BUILD_USER_ACCESS_ROLE_ALLOWS_USER:
+    'build-user-access-role-allows-user-relationships',
+  BUILD_GROUP_ACCESS_ROLE_ALLOWS_USER:
+    'build-group-access-role-allows-group-relationships',
 };
 
 export const Entities = {
@@ -49,6 +55,16 @@ export const Entities = {
     _type: 'gitlab_project',
     _class: ['CodeRepo', 'Project'],
   },
+  USER_ACCESS_ROLE: {
+    resourceName: 'User Access Role',
+    _type: 'gitlab_user_access_role',
+    _class: ['AccessRole'],
+  },
+  GROUP_ACCESS_ROLE: {
+    resourceName: 'Group Access Role',
+    _type: 'gitlab_group_access_role',
+    _class: ['AccessRole'],
+  },
 };
 
 export const Relationships = {
@@ -70,6 +86,18 @@ export const Relationships = {
     _class: RelationshipClass.HAS,
     targetType: Entities.USER._type,
   },
+  PROJECT_HAS_USER_ACCESS_ROLE: {
+    _type: 'gitlab_project_has_user_access_role',
+    sourceType: Entities.PROJECT._type,
+    _class: RelationshipClass.HAS,
+    targetType: Entities.USER_ACCESS_ROLE._type,
+  },
+  PROJECT_HAS_GROUP_ACCESS_ROLE: {
+    _type: 'gitlab_project_has_group_access_role',
+    sourceType: Entities.PROJECT._type,
+    _class: RelationshipClass.HAS,
+    targetType: Entities.GROUP_ACCESS_ROLE._type,
+  },
   GROUP_HAS_SUBGROUP: {
     _type: 'gitlab_group_has_group',
     sourceType: Entities.GROUP._type,
@@ -87,6 +115,12 @@ export const Relationships = {
     sourceType: Entities.GROUP._type,
     _class: RelationshipClass.HAS,
     targetType: Entities.PROJECT._type,
+  },
+  GROUP_HAS_USER_ACCESS_ROLE: {
+    _type: 'gitlab_group_has_user_access_role',
+    sourceType: Entities.GROUP._type,
+    _class: RelationshipClass.HAS,
+    targetType: Entities.USER_ACCESS_ROLE._type,
   },
   PROJECT_HAS_PR: {
     _type: 'gitlab_project_has_merge_request',
@@ -111,5 +145,17 @@ export const Relationships = {
     sourceType: Entities.MERGE_REQUEST._type,
     _class: RelationshipClass.HAS,
     targetType: Entities.COMMIT._type,
+  },
+  USER_ACCESS_ROLE_ALLOWS_USER: {
+    _type: 'gitlab_user_access_role_allows_user',
+    sourceType: Entities.USER_ACCESS_ROLE._type,
+    _class: RelationshipClass.ALLOWS,
+    targetType: Entities.USER._type,
+  },
+  GROUP_ACCESS_ROLE_ALLOWS_GROUP: {
+    _type: 'gitlab_group_access_role_allows_group',
+    sourceType: Entities.GROUP_ACCESS_ROLE._type,
+    _class: RelationshipClass.ALLOWS,
+    targetType: Entities.GROUP._type,
   },
 };
